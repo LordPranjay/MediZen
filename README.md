@@ -5,7 +5,8 @@
 
 MediZen is a JavaScript-based project designed to assist in various healthcare-related tasks using AI. It leverages technologies like Next.js and Google's Gemini AI to provide intelligent solutions.
 
-
+## Watch Demo on Youtube
+[![Watch the Demo](./public/cover.png)](https://youtu.be/fK0VT2xUwgs)
 
 
 ## Features
