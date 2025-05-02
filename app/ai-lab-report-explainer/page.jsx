@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+const api_key = process.env.NEXT_PUBLIC_OCR_API_KEY;
 
 const AiLabReport = () => {
     const [reportText, setReportText] = useState("");
@@ -29,32 +30,43 @@ const AiLabReport = () => {
     const handleFileUpload = async (event) => {
         const file = event.target.files[0];
         if (!file) return;
-
+      
         setUploadLoading(true);
         setReportText("");
-
+      
         const formData = new FormData();
+        formData.append("apikey", api_key); 
+        formData.append("language", "eng");
+        formData.append("isOverlayRequired", "false");
         formData.append("file", file);
-
+      
         try {
-            const response = await fetch("https://file-to-text-nextcn.vercel.app/extract-text", {
-                method: "POST",
-                body: formData,
-            });
+          const response = await fetch("https://api.ocr.space/parse/image", {
+            method: "POST",
+            body: formData,
+          });
+      
+          if (!response.ok) {
+            throw new Error(`Error from OCR API: ${response.status} ${response.statusText}`);
+          }
+      
+          const result = await response.json();
+          if (result.IsErroredOnProcessing) {
+            throw new Error(`OCR Error: ${result.ErrorMessage || JSON.stringify(result)}`);
+          }
+      
+          const parsed = result.ParsedResults?.[0]?.ParsedText || "";
+          setReportText(parsed);
 
-            if (!response.ok) {
-                throw new Error(`Error: ${response.statusText}`);
-            }
-
-            const text = await response.text();
-            setReportText(text);
-            await processLabReport(text);
+          await processLabReport(parsed);
         } catch (error) {
-            console.error("Error extracting text:", error);
+          console.error("Error extracting text:", error);
+          setReportText("Failed to extract text. Please try again.");
         } finally {
-            setUploadLoading(false);
+          setUploadLoading(false);
         }
-    };
+      };
+      
 
     const processLabReport = async (text) => {
         setLoading(true);
