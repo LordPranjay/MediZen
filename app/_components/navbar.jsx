@@ -15,7 +15,7 @@ const Navbar = () => {
                 </div>
             </Link>
             <div className="flex gap-4">
-                <Button onClick={() => window.open('https://example.com/demo-video', '_blank')}>
+                <Button onClick={() => window.open('https://youtu.be/fK0VT2xUwgs', '_blank')}>
                     Demo Video
                 </Button>
             </div>
